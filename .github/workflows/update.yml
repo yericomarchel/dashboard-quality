@@ -1,0 +1,38 @@
+name: Auto Capture Power BI
+
+# Jadwal berjalan otomatis
+on:
+  schedule:
+    - cron: '0 * * * *' # Menjalankan skrip setiap jam (menit ke-0)
+  workflow_dispatch: # Tombol manual untuk trigger kapan saja di GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  capture-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Requirements
+        run: |
+          pip install playwright
+          playwright install chromium
+
+      - name: Jalankan Script Capture
+        run: python capture.py
+
+      - name: Commit dan Push Gambar Baru
+        run: |
+          git config --global user.name "GitHub Automation"
+          git config --global user.email "action@github.com"
+          git add slide*.png
+          git commit -m "Auto-update dashboard screenshot" || echo "Tidak ada perubahan gambar"
+          git push

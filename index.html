@@ -60,25 +60,67 @@
     <img id="dashboardImg" src="slide0.png" alt="Memuat Dashboard...">
 
     <script>
+        // ==========================================
+        // 1. FITUR ANTI-LAYAR MATI (WAKE LOCK API)
+        // ==========================================
+        let wakeLock = null;
+        
+        async function keepScreenAwake() {
+            try {
+                // Cek apakah browser TV mendukung fitur ini
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock aktif! Layar tidak akan mati.');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake Lock terlepas, mencoba mengaktifkan kembali...');
+                    });
+                }
+            } catch (err) {
+                console.error(`Gagal menahan layar menyala: ${err.name}, ${err.message}`);
+            }
+        }
+
+        // Jalankan saat pertama kali dibuka
+        keepScreenAwake();
+        
+        // Pastikan tetap menyala jika halaman sempat tidak fokus
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                keepScreenAwake();
+            }
+        });
+
+
+        // ==========================================
+        // 2. LOGIKA ROTASI SLIDESHOW GAMBAR
+        // ==========================================
         const totalSlides = 6; 
         let currentSlide = 0;
-        const intervalTime = 60000; // 1 Menit
+        const intervalTime = 60000; // Pindah gambar setiap 1 Menit (60000 milidetik)
 
         function changeSlide() {
-            // Logika loop yang rapi: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> kembali ke 0
+            // Naikkan angka slide, kembali ke 0 jika sudah mencapai batas akhir
             currentSlide = (currentSlide + 1) % totalSlides;
+            
             const imgElement = document.getElementById('dashboardImg');
             const counterElement = document.getElementById('slideCounter');
             
+            // Buat gambar memudar (fade out)
             imgElement.style.opacity = 0;
             
+            // Tunggu setengah detik saat gelap, lalu ganti gambar dan teks
             setTimeout(() => {
+                // Parameter ?t= digunakan agar TV tidak memakai gambar lawas (cache)
                 imgElement.src = `slide${currentSlide}.png?t=` + new Date().getTime();
                 counterElement.innerText = `Slide ${currentSlide + 1} / ${totalSlides}`;
+                
+                // Munculkan kembali gambar (fade in)
                 imgElement.style.opacity = 1;
             }, 500); 
         }
 
+        // Jalankan fungsi rotasi secara berulang
         setInterval(changeSlide, intervalTime);
     </script>
 </body>

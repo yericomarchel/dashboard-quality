@@ -14,18 +14,31 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        h2 {
+        .header-overlay {
             position: absolute;
             top: 20px;
             left: 20px;
             z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+        h2 {
             color: #f2f2f2;
             letter-spacing: 2px;
             font-weight: 300;
             text-transform: uppercase;
             font-size: 1.2rem;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+        .slide-counter {
+            color: #f2c811; /* Warna kuning Power BI */
+            font-weight: bold;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.7);
             padding: 8px 20px;
             border-radius: 5px;
         }
@@ -39,26 +52,31 @@
 </head>
 <body>
 
-    <h2>Dashboard Quality</h2>
+    <div class="header-overlay">
+        <h2>Dashboard Quality</h2>
+        <div id="slideCounter" class="slide-counter">Slide 1 / 6</div>
+    </div>
+    
     <img id="dashboardImg" src="slide0.png" alt="Memuat Dashboard...">
 
     <script>
-        const totalSlides = 6; // Total 6 slide (Slide 2 sampai Slide 7)
+        const totalSlides = 6; 
         let currentSlide = 0;
         const intervalTime = 60000; // 1 Menit
 
         function changeSlide() {
+            // Logika loop yang rapi: 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> kembali ke 0
             currentSlide = (currentSlide + 1) % totalSlides;
             const imgElement = document.getElementById('dashboardImg');
+            const counterElement = document.getElementById('slideCounter');
             
-            // Efek fade out singkat sebelum ganti gambar
             imgElement.style.opacity = 0;
             
             setTimeout(() => {
-                // Tambahkan timestamp agar browser selalu mengambil gambar terbaru dari server
                 imgElement.src = `slide${currentSlide}.png?t=` + new Date().getTime();
+                counterElement.innerText = `Slide ${currentSlide + 1} / ${totalSlides}`;
                 imgElement.style.opacity = 1;
-            }, 500); // Tunggu setengah detik saat gelap
+            }, 500); 
         }
 
         setInterval(changeSlide, intervalTime);

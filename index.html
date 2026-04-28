@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Quality - Full Screen TV</title>
+    <title>Dashboard Quality - Full Screen TV (7 Slides)</title>
     <style>
         /* Menghilangkan semua scrollbar dan margin default browser */
         * {
@@ -18,12 +18,12 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             height: 100vh;
             width: 100vw;
-            overflow: hidden; /* Mencegah munculnya scrollbar di TV */
+            overflow: hidden; 
             display: flex;
             flex-direction: column;
         }
 
-        /* Judul melayang di pojok kiri atas agar tidak memotong frame */
+        /* Judul melayang di pojok kiri atas */
         h2 { 
             position: absolute;
             top: 15px;
@@ -34,10 +34,10 @@
             font-weight: 300;
             text-transform: uppercase;
             font-size: 1.2rem;
-            background: rgba(0, 0, 0, 0.4); /* Background transparan tipis */
+            background: rgba(0, 0, 0, 0.4); 
             padding: 5px 15px;
             border-radius: 5px;
-            pointer-events: none; /* Klik akan menembus ke iframe di bawahnya */
+            pointer-events: none; 
         }
 
         /* Area Dashboard Full Screen */
@@ -107,11 +107,15 @@
         <div id="slide5" class="tab-panel">
             <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D&pageName=e1744970a0e90b704012" allowFullScreen="true"></iframe>
         </div>
+
+        <div id="slide6" class="tab-panel">
+            <iframe src="https://app.powerbi.com/view?r=eyJrIjoiNmQ0ZjJmM2UtNjI4Ny00MTAwLWFjMDktNTVmZDc1YWUxZTA0IiwidCI6IjI5ZTZhYTNhLTljZTItNDVmYS1iYjZhLWZlYWUwMDU2NjVhZiIsImMiOjEwfQ%3D%3D" allowFullScreen="true"></iframe>
+        </div>
     </div>
 
     <script>
         let currentSlide = 0;
-        const totalSlides = 6; 
+        const totalSlides = 7; // Diubah menjadi 7 slide
         const intervalTime = 60000; // Berpindah setiap 60 Detik
 
         function nextSlide() {
@@ -135,29 +139,26 @@
 
         async function requestWakeLock() {
             try {
-                // Meminta browser untuk menahan layar agar tetap menyala
-                wakeLock = await navigator.wakeLock.request('screen');
-                console.log('Wake Lock aktif! Layar ditahan agar tidak mati.');
-                
-                // Jika wake lock terlepas (misal TV sempat error), minta ulang
-                wakeLock.addEventListener('release', () => {
-                    console.log('Wake Lock terlepas.');
-                });
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock aktif!');
+                    
+                    wakeLock.addEventListener('release', () => {
+                        console.log('Wake Lock terlepas.');
+                    });
+                }
             } catch (err) {
-                console.log(`Wake Lock tidak didukung di browser ini: ${err.name}, ${err.message}`);
+                console.log(`Wake Lock Error: ${err.name}, ${err.message}`);
             }
         }
 
-        // Jalankan fungsi saat web pertama kali dibuka
         requestWakeLock();
 
-        // Minta ulang Wake Lock jika browser sempat tertutup/ter-minimize lalu dibuka lagi
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 requestWakeLock();
             }
         });
-        // ----------------------------------------------
     </script>
 </body>
 </html>
